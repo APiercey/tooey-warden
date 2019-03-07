@@ -7,12 +7,12 @@
 package main
 
 import (
-	"log"
-  "os/exec"
-  "encoding/json"
-  "os"
+	"encoding/json"
 	ui "github.com/gizak/termui"
 	"github.com/gizak/termui/widgets"
+	"log"
+	"os"
+	"os/exec"
 )
 
 func main() {
@@ -21,9 +21,9 @@ func main() {
 	}
 	defer ui.Close()
 
-  bwItems := getBitWardenItems()
+	bwItems := getBitWardenItems()
 
-  draw(bwItems)
+	draw(bwItems)
 	uiEvents := ui.PollEvents()
 	for {
 		select {
@@ -32,45 +32,50 @@ func main() {
 			case "q", "<C-c>": // press 'q' or 'C-c' to quit
 				return
 			case "<Resize>":
-        draw(bwItems)
+				draw(bwItems)
 			}
 		}
 	}
 }
+
+// ReadOp Perform a read from the application state
 type ReadOp struct {
-  key  int
-  resp chan int
+	key  int
+	resp chan int
 }
 
+// WriteOp perform a read to the application state
 type WriteOp struct {
-  key  int
-  val  int
-  resp chan bool
+	key  int
+	val  int
+	resp chan bool
 }
 
+// ApplicationState the state of the application
 type ApplicationState struct {
-  Items []BwItems
+	Items []BwItems
 }
 
+// Application contains the structure of the application data, including state and read and write queues.
 type Application struct {
-  State ApplicationState
-  WriteQueue chan WriteOp
-  ReadQueue chan ReadOp
+	State      ApplicationState
+	WriteQueue chan WriteOp
+	ReadQueue  chan ReadOp
 }
 
 func createApplicationState() Application {
 }
 
 func draw(bwItems []BwItem) {
-  l := createItemsList()
-  l = populateItemsList(bwItems, l)
+	l := createItemsList()
+	l = populateItemsList(bwItems, l)
 
-  f := createFilterControl()
+	f := createFilterControl()
 
-  p := widgets.NewParagraph()
-  p.Text = "Test"
+	p := widgets.NewParagraph()
+	p.Text = "Test"
 
-  grid := createGrid()
+	grid := createGrid()
 
 	grid.Set(
 		ui.NewRow(0.92,
@@ -85,15 +90,13 @@ func draw(bwItems []BwItem) {
 	ui.Render(grid)
 }
 
-
 func createGrid() *ui.Grid {
-  grid := ui.NewGrid()
-  termWidth, termHeight := ui.TerminalDimensions()
-  grid.SetRect(0, 0, termWidth, termHeight)
+	grid := ui.NewGrid()
+	termWidth, termHeight := ui.TerminalDimensions()
+	grid.SetRect(0, 0, termWidth, termHeight)
 
-  return grid
+	return grid
 }
-
 
 func createItemsList() *widgets.List {
 	l := widgets.NewList()
@@ -101,76 +104,72 @@ func createItemsList() *widgets.List {
 	l.TextStyle = ui.NewStyle(ui.ColorYellow)
 	l.WrapText = false
 
-  return l
+	return l
 }
 
 func populateItemsList(bwItems []BwItem, l *widgets.List) *widgets.List {
-  items := []string{ }
-  for _, elem := range bwItems {
-    items = append(items, elem.Name)
-  }
+	items := []string{}
+	for _, elem := range bwItems {
+		items = append(items, elem.Name)
+	}
 
-  l.Rows = items
+	l.Rows = items
 
-  return l
+	return l
 }
 
 func createFilterControl() *widgets.Paragraph {
-  p := widgets.NewParagraph()
+	p := widgets.NewParagraph()
 	p.Text = "Press / to filter (press ? for help)"
 	p.Title = "Filter"
 
-  return p
+	return p
 }
-
 
 func getItems() map[string]string {
-  dict := make(map[string]string)
-  dict["Gitlab"] = "asd"
-  dict["Github"] = "ghj"
-  dict["bitbucket"] = "uuu"
+	dict := make(map[string]string)
+	dict["Gitlab"] = "asd"
+	dict["Github"] = "ghj"
+	dict["bitbucket"] = "uuu"
 
-  return dict
+	return dict
 }
 
-
 func readBitWardenItems() []byte {
-  cmd := exec.Command("bw", "list", "items")
-  out, err := cmd.CombinedOutput()
+	cmd := exec.Command("bw", "list", "items")
+	out, err := cmd.CombinedOutput()
 
 	if err != nil {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
-    os.Exit(1)
+		os.Exit(1)
 	}
 
-  return out
+	return out
 }
 
+// BwLogin Bitwarden login information
 type BwLogin struct {
-  Username string
-  Password string
+	Username string
+	Password string
 }
 
+// BwItem struct of a Bitwarden item
 type BwItem struct {
-  Id string
-  Name string
-  Login BwLogin
+	ID    string
+	Name  string
+	Login BwLogin
 }
 
+// BwItemCollection a collection of BwItems
 type BwItemCollection struct {
-  Collection []BwItem
+	Collection []BwItem
 }
 
 func getBitWardenItems() []BwItem {
-  data := readBitWardenItems()
+	data := readBitWardenItems()
 
-  bwItems := make([]BwItem, 0)
-  json.Unmarshal(data, &bwItems)
+	bwItems := make([]BwItem, 0)
+	json.Unmarshal(data, &bwItems)
 
-  return bwItems
+	return bwItems
 }
-
-asdasdad
-
-
-
