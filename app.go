@@ -1,9 +1,3 @@
-// Copyright 2017 Zack Guo <zack.y.guo@gmail.com>. All rights reserved.
-// Use of this source code is governed by a MIT license that can
-// be found in the LICENSE file.
-
-// +build ignore
-
 package main
 
 import (
@@ -19,7 +13,7 @@ func main() {
 	}
 	defer ui.Close()
 
-	bwItems := getBitWardenItems()
+	bwItems := state.getBitWardenItems()
 
 	draw(bwItems)
 	uiEvents := ui.PollEvents()

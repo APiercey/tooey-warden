@@ -27,16 +27,17 @@ func (t *ChopFilterString) Run(as ApplicationState) ApplicationState {
 // ApplicationState the state of the application
 type ApplicationState struct {
 	FilterString string
+	Items        []BwItem
 }
 
 // Application contains the structure of the application data, including state and read and write queues.
 type Application struct {
-	State      ApplicationState
-	WriteQueue []Transformation
+	State               ApplicationState
+	TransformationQueue []Transformation
 }
 
 func (a *Application) write(t Transformation) {
-	a.WriteQueue = append(a.WriteQueue, t)
+	a.TransformationQueue = append(a.TransformationQueue, t)
 }
 
 func (a *Application) read() ApplicationState {
@@ -45,8 +46,11 @@ func (a *Application) read() ApplicationState {
 
 func createApplicationState() Application {
 	a := Application{
-		State:      ApplicationState{FilterString: ""},
-		WriteQueue: make([]Transformation, 0),
+		State: ApplicationState{
+			FilterString: "",
+			Items:        make([]BwItem, 0),
+		},
+		TransformationQueue: make([]Transformation, 0),
 	}
 
 	return a
